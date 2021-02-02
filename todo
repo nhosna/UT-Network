@@ -1,0 +1,598 @@
+php artisan make:model Models/Comment
+
+
+
+to seed database
+php artisan db:seed --class=DummySeeder
+php artisan db:seed --class=RolePermissionSeeder
+insert into users (name,email,password,role) values ('admin','admin@admin.com','adminadmin','admin')
+
+todo
+
+
+
+    a user can only comment on a post once
+
+
+
+
+
+todo
+    dont let user write comment twice on a post instead show them the comment and let them edit
+
+
+
+
+
+
+todo
+    remove unsused 	"maatwebsite/laravel-sidebar": "~2.1" from compser.json
+
+
+
+todo
+    create slug for post and group and user
+
+
+todo
+    make validation in frontend_forms so that one of like or dislike is selected
+    to upload a file with a post add function inside uploadcontroller into postcontroller.store
+
+TODO blogcontroller should only show posts of groups you are of
+
+
+
+
+fixme
+    the checkbox in create/edit group is hidden and not showing
+
+
+todo
+    admin can index groups two ways:
+
+todo
+    use one-many polymorphic rel for opionion of type acceptance and like
+
+
+
+order by created_at and updated_at in feed
+
+should i immediately save like after click of a thumb or put a submit button?   >> if not immediate then save value of form only when submit is hit
+
+
+
+add font-awesome library to use fa-sort-desc in sidemenu
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+groupController:
+    frontend:
+        mygroups --show all my groups
+        groupfeed --show posts of that group
+        groupdetails --show group details
+    admin:
+        index=mygroups by the groups i am admin of
+        create --show view(admin.groups)
+        edit=groupdetails
+        show=groupfeed
+        createpost --create new post for group
+
+postController:
+    store --new post
+    create --show view(admin.post.create)
+    index --show view(admin.posts)
+
+BlogController:
+    todo add
+        groupfeed: show feed of a certain group
+        groupdetails : show details of group
+        mygroups --show all my groups
+
+    index: feed for all posts  >> todo change to "timeline"
+    comment: set comment on a post (with opinion)
+    post: show view(frontend.post) with all comments
+    todo
+        add createpost here if post creation is done inside feed
+
+
+todo two different BlogControllers:
+
+    frontend:
+        timeline
+        comment
+        post
+        groupfeed
+        groupdetails
+        mygroups
+
+    admin: frontend +
+        createpost
+        admingroups
+
+    -------------------------------------------------------------
+todo groupcontroller:
+
+    if admin:
+        index=all groups i am admin of          >> admin.groups.index
+        create=create new group                  >> admin.groups.create   >> _groupcreateform _addusers
+        show=show group details with edit/del option  >> admin.groups.show  >> _groupeditform _editusers  _del
+        update=edit group by request                   ret -> ? show
+        destroy=delete group by request                 ret -> ? index
+
+    else:
+        index=all groups i am member of           >>frontend.groups.index
+        show=show group details view only         >>frontend.groups.show  >>_members _groupdetails
+
+
+
+todo postcontroller:
+
+    if admin:
+        index: show all posts i have posted                  >> admin.posts.index
+        create: show create new post for the specified group        >> admin.posts.create   >> _postcreateform _expirationdate
+        show: post with edit/del options                       >> admin.posts.show     >>  _post _posteditform _expirationdate _del _comments _opininons
+        store: store new post by request                       ret -> ? show
+        update: edit group by request                           ret -> ? show
+        destroy=delete post by request                           ret -> ? index
+
+    else:
+        show: view post with comment/opinion option                 >> frontend.posts.show   >> _commentform _comments _opininons
+
+
+todo commentcontroller:
+
+    else:
+        store: comment on a post                                 ret -> ? show
+        update:                                                 ret -> ? show
+
+todo opinioncontroller:
+
+    else:
+        store: opinion on a post                                   ret -> ? show
+        update:                                                 ret -> ? show
+
+
+todo blogcontroller/homecontroller:
+
+    if admin:
+        timeline: posts from all groups i am admin of
+    else:
+        timeline: posts from all groups i am member of
+
+todo usercontroller:
+
+    if admin:
+        index: list all users ??
+        show: show user details with the groups member of
+        edit: add user to a group or remove from a group
+
+    else:
+        index: list users inside a group
+        show: show user details
+
+------------------------------views-------------------------------
+
+
+group
+        group.feed
+            layout: posts +comments +opinions
+                if admin >> _createpost
+                else >> _commentform
+
+        group.show:
+            layout:
+                if admin >> _groupeditdetailsform _editmembers _del
+                else >> _groupdetails _showmembers
+
+
+        group.index
+            layout: list of groups
+
+        group.create
+            if admin >> _groupcreateform _addmembers
+
+
+post
+
+        post.show:
+            layout: post title+body + comments opininons
+                if admin >> _posteditform _del _expireset
+                else >> _commentform
+
+        post.create
+            if admin >> _postcreateform _expireset
+
+
+        post.index
+            if admin >> show all posts of groups i am admin of with result aggregation
+
+   ----------templates-------------
+
+group
+    layout:
+        group.feed
+        group.show
+        group.index
+        group.create
+    admin:
+        _editform
+        _editmembers
+        _delgroup
+        _createform
+        _addmembers
+    frontend:
+        _showdetails
+        _showmembers
+post:
+    layout:
+        post.show
+        post.index
+        post.create
+    admin:
+        _editform
+        _createform
+        _delpost
+        _expireset
+    frontend:
+        _commentform >> todo maybe better to move to comment folder
+
+
+
+
+
+
+
+todo
+    change group.admin group.frontend  views based on group.layouts and same for post.admin and post.frontend
+
+
+
+
+
+todo
+    remove column is_published from posts
+
+
+todo write commentcontroller.update in frontend
+    write groupcontroller.udpate for admin
+
+
+todo write group._ediform and _delgroup
+todo write post._ediform and _delpost
+
+
+
+todo create components.menu from layouts.menu for admin and frontend
+
+
+
+
+menu:
+    list of menuitems (multi or single)
+        if multi:
+           header name + collapse name+ list of insiders
+
+           insider:
+                name + link
+        if single:
+            header name +link
+
+
+
+
+todo
+    remove updated_at column for group_user
+
+
+todo
+    in group.index for frontend do we show the groups we are admin of too or only
+
+todo
+    to show posts from diff groups in timeline sort by update_at
+
+todo
+    if both admin and frontend can comment on a post then commentdcontroller is the same for both >> dont seperate
+
+todo
+    for showing comments and opinions implement post.replies that merges them and sorts by time or create polymorphic rel between post and comment,opinion
+
+
+fixme
+    _slider wont show value
+
+
+todo
+    show post replies in reply.index correctyl
+    ############################################################################3
+todo
+    change bootstrap font
+
+todo
+    show like/dislike count under thumbs and send everytime thumbs is clicked
+
+
+todo
+    fix creating post in post.create >> submit and title
+
+todo
+    in user.add when items in group are toggled add/rem them from hidden input
+
+
+
+
+todo
+    change replies table unique policy on one reply per user post
+
+
+
+
+todo
+    in uploadfile delete file with ajax without redirecting to url of get
+
+
+todo
+    fix search of post by title and body
+    file attachment upto 20 files >>
+     time picker for expiration date
+    sort comments on post by creationdate descending
+    if already inside post.show remove see more button
+    show breadcrumb for each page seperately  in routes.breadcrumbs.php
+    user urls are users/username not users/userid
+    todo allow super to assign roles of super/admin/user to each user in user.edit
+
+
+
+    todo
+        what to show on progress bar if no one has voted yet>?
+
+        todo create a search users by name/email in group.show for admin for editing members
+
+        only allow emails with @ut.ac.ir to be registered for user
+        batch user registration for admin
+
+
+        todo how to use likers on post using has many through?
+        fixme fix searching users in memeber.edit
+
+
+        todo dont allow an admin of a group to have admin access of another group
+        todo show vote percent with color using https://stackoverflow.com/questions/7128675/from-green-to-red-color-depend-on-percentage
+        todo instead of showing slider and thumbs disabled show percentage or like/dislike button and inject forms when editing is enabled
+
+
+
+        change color of fi-unknown to gray in css-file-icons
+
+
+        make upload-file.js and show-post.js files find elements relativey like member.edit
+        in uploaded-files the source and link should be images/filename fixit
+        in showing my-vote we shouldnt display reply form until edit is pressed
+ //  all extension     'mp3', 'wav', 'aif', 'cda', 'mid', 'midi', 'mpa', 'mkv', 'ogg', 'wpa', 'wpl', '7z', 'zip', 'rar', 'tar.gz', 'pkg', 'z', 'csv', 'dat', 'json', 'xml', 'dat', 'db', 'dbf', 'sql', 'ns', '3ds', 'max', 'ai', 'psd', 'ttf', 'woff', 'woff2', 'png', 'bmp', 'jpg', 'jpeg', 'gif', 'tif', 'tiff', 'svg', 'rss', 'torrent', 'ppt', 'pps', 'pptx', 'odp', 'asp', 'c', 'cs', 'java', 'jsp', 'swift', 'php', 'hh', 'go', 'py', 'js', 'html', 'xhtml', 'css', 'vb', 'rb', 'scss', 'sass', 'less', 'jsx', 'sh', 'pl', 'xls', 'xlsx', 'xlsm', 'ods', 'dll', 'bak', 'ini', 'dmp', 'sys', 'cfg', 'tmp', 'icns', 'doc', 'docx', 'log', 'txt', 'pdf', 'avi', 'mov', 'mp4', 'mpg', 'mpeg', 'mkv', 'wmv', 'wps', 'exe'
+
+
+
+       to show new line ??      {!!   nl2br($comment->body)   !!}
+
+
+
+    todo
+        TODo should i exclude myself or let another admin be replaced?
+        $users = User::where('id','!=',auth()->user()->id)->paginate(10); >>groupcontroller.edit
+        give feedback to user when reply createed
+        use modals instead for confirmations
+        allow showing of uploaded files in edit-post to edit uploaded files
+        todo show collapse in button on each comment to hide loaded replies
+        todo to edit uploaded files load prevous ones using functions in show-files and
+        todo change color of modal >>warning ..
+        capitalize all names after when saving
+        todo if in edit post vote type is changed warn user that all votes will be deleted.
+
+
+
+        todo on vote/comment redirect to post.show
+
+        todo reset migrations and check if show vote in voters for percent works
+        todo if file not uploaded yet dont allow user to create post or warn them
+
+        todo check email notification for new password layout
+        check password confirmation/reset works
+
+
+        remove created_at and update_at for unnecessary tables
+        create a rahnama for admins >> post vote type
+
+
+        complete user-invite
+
+        change alert message on uploadfile leave
+
+
+        check that non author cant edit post or other's comment
+
+
+ fixme for comment/reply with line break cant edit
+
+
+
+
+todo change mail in https://laraveldaily.com/mail-notifications-customize-templates/
+
+todo how to send email asynchronously?
+
+
+todo write validator for post store create
+
+todo authorize user for group /user search
+
+
+of
+  when creating reply
+
+
+ notifications for:
+    reply to comment/reply
+    new post
+    new member
+    role change in group
+    added to group
+    removed from groupp
+
+todo simplify admin/member edit in groupcontroller
+todo call membershipstatus notif in groupcon .edit
+
+todo notify group users of new post with user->notify
+nhosna@nhosna-K401UQK:~/PhpstormProjects/UTForum/blog/resources/views$ grep -nr '<script>' .
+./partials/comment-btn.blade.php:11:<script>
+./partials/post-percent.blade.php:37:<script> //TODO with php var
+./partials/vote-slider.blade.php:46:{{--<script>--}} //TODO with php var
+./partials/search-bar.blade.php:22:<script>
+./partials/reply-btn.blade.php:13:<script> // TODO push inside show-post
+./partials/user-avatar.blade.php:37:{{--<script>--}}
+./partials/more-replies.blade.php:12:<script> // TODO push inside show-post
+./panels/form/upload-file.blade.php:67:<script>
+./panels/form/edit-member.blade.php:111:<script>
+./panels/form/create-comment.blade.php:27:<script> // TODO push inside show-post
+./panels/form/create-reply.blade.php:26:<script>   // TODO push inside show-post
+./panels/form/edit-post.blade.php:61:{{--<script>--}}  // TODO push inside show-post
+./panels/view/show-post.blade.php:217:<script>  // TODO push inside show-post
+./panels/view/show-replies.blade.php:9:<script>  // TODO push inside show-post
+./panels/view/show-files.blade.php:14:<script>  // TODO push inside show-post
+./panels/view/edit-file.blade.php:96:<script>
+
+./pages/user/import/import-file.blade.php:89:    <script>
+./layouts/admin.blade.php:112:    <script>
+./layouts/app.blade.php:105:    <script>
+./layouts/app.blade.php:268:{{--<script>--}}
+
+todo use post-percent script only once
+
+
+onchange of select works only once
+
+    posts/post/* and groups/group/* for members and admins
+    /groups >> if user or admin >> groups member of
+                else if super >>all groups
+
+
+    /groups/group/edit for admin
+
+    /posts  >>posts of groups admin of >>admins
+
+
+    /users and /users/create and /users/edit >>super only
+
+
+
+todo remove exte1
+
+
+
+//each comment has many comments (hasmany) and is a reply to either a post or a comment (belongsto)
+-------------------------------------------------------------------------------------------------------
+breadcrumbs>>
+
+post>> postname/groupname/home
+group>> groupname/groups/home
+creategroup>>creategroup/groups/home
+feed >> groupname/home
+admin: user >>user name/users/home
+frontend: user >>user /group/home
+-----------------------------
+notes:
+
+    Model::where('id','=',idslist) returns array of models
+    Model::find(idslist) returns collection
+
+
+    to convert from greg to jalali full \Morilog\Jalali\Jalalian::fromCarbon( $post->created_at )  >>1399-06-07 16:16:15
+     <li class="list-group-item"   ><h> {{ $user->name }}-</h> <a href="/users/{{$user->id}}">{{$user->getUsername()}}</a></li>   >>Friday, 07 Shahrivar 1399, 16:06
+
+
+questions:
+    do admin and normal user have different views of post.show ? (for see more on each post and postcontroller.show)
+
+
+fixme
+    search in group post and archive fail
+    collapse for posts in home
+    side bar fixed
+    polling vote type
+    make sure user access in group is showed correctly
+    upload failed when invalid file saved
+    remove admin/user role change in super privileges
+    show group archive in another navigation tab
+    show success in reply/comment create toast
+    should i collapse in post body inside group feed too? or only home?
+    remove collapse link after press
+    should i show new created comment to user with js?
+    show links as hyperlink in post/comment/reply
+    convert link text to href >>https://stackoverflow.com/questions/24162684/how-to-auto-convert-an-url-into-a-hyperlink-when-it-is-pasted
+    when showing only brief post info dont load all stuff like comments too >> another seperate controller method
+    fix removing item in create-poll
+    move onsubmit from create-poll to create-post
+    show poll in show-post
+    validate: make sure there are at
+    array to string conversion error in vote store votecontroller
+    check out vote-post-result-poll
+
+
+fixme
+    when search index eg group and go to next pagination returns data as json >>search-bar
+    when go to next pagination post index error
+
+todo
+    show archived posts as tab view
+
+
+
+    {{--//TODO tab view--}}
+    {{--    <ul class="nav nav-tabs">--}}
+    {{--        <li class="active"><a href="#a" data-toggle="tab"  >a</a></li>--}}
+    {{--        <li><a href="#b" data-toggle="tab"  >b</a></li>--}}
+    {{--        <li><a href="#c" data-toggle="tab"  >c</a></li>--}}
+    {{--        <li><a href="#d" data-toggle="tab"  >d</a></li>--}}
+    {{--    </ul>--}}
+
+    {{--    <div class="tab-content">--}}
+    {{--        <div class="tab-pane active" id="a">AAA</div>--}}
+    {{--        <div class="tab-pane" id="b">BBB</div>--}}
+    {{--        <div class="tab-pane" id="c">CCC</div>--}}
+    {{--        <div class="tab-pane" id="d">DDD</div>--}}
+    {{--    </div>--}}
+
+
+
+todo
+    edit vote type and delete previous votes
+    edit vote poll for voter
+    make 3 entities percent/like/poll that inherit from vote
+        percent ->value
+        like-> true,false
+        poll-> json
+
+    todo
+        update migrations and change where vote is manipulated
+
+    todo
+        onload of post edit fill poll if type is poll
+        cant edit/delete expired post
+        in group details fix breadcrumb
+
+
+//        "morilog/jalali": "^3.1",
+
